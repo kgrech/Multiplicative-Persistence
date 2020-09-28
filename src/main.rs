@@ -83,7 +83,9 @@ fn main() {
 
 #[cfg(test)]
 mod tests {
-    use crate::{multiplicative_persistence, multiply_digits};
+    use crate::{
+        multiplicative_persistence, multiplicative_persistence_array, multiply_digits, NUM_DIGITS,
+    };
     use rstest::rstest;
 
     #[rstest(
@@ -112,12 +114,42 @@ mod tests {
         case(186889, 7),
         case(2678789, 8),
         case(26899889, 9),
-        case(3778888999, 10)
+        case(3778888999, 10),
+        case(277777788888899, 11)
     )]
     fn when_multiplicative_persistence_called_then_correct_value_returned(
         number: u128,
         expected: u8,
     ) {
         assert_eq!(multiplicative_persistence(number), expected);
+    }
+
+    #[rstest(
+        number,
+        expected,
+        case(29, 2),
+        case(47, 3),
+        case(277, 4),
+        case(769, 5),
+        case(8867, 6),
+        case(186889, 7),
+        case(2678789, 8),
+        case(26899889, 9),
+        case(3778888999, 10),
+        case(277777788888899, 11)
+    )]
+    fn when_multiplicative_persistence_array_called_then_correct_value_returned(
+        number: u128,
+        expected: u8,
+    ) {
+        let mut digit = [1u8; NUM_DIGITS];
+        let mut rest = number;
+        let mut i = NUM_DIGITS - 1;
+        while rest != 0 {
+            digit[i] = (rest % 10) as u8;
+            rest /= 10;
+            i -= 1;
+        }
+        assert_eq!(multiplicative_persistence_array(&digit), expected);
     }
 }
